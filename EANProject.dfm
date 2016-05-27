@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'EAN'
   ClientHeight = 564
-  ClientWidth = 358
+  ClientWidth = 355
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,7 +24,7 @@ object Form1: TForm1
     OnClick = bQuitClick
   end
   object rbArithmeticGroup: TRadioGroup
-    Left = 16
+    Left = 19
     Top = 119
     Width = 137
     Height = 74
@@ -37,6 +37,7 @@ object Form1: TForm1
     ParentShowHint = False
     ShowHint = False
     TabOrder = 1
+    OnClick = rbArithmeticGroupClick
   end
   object panelData: TPanel
     Left = 40
@@ -89,7 +90,7 @@ object Form1: TForm1
     object edAlpha: TEdit
       Left = 53
       Top = 13
-      Width = 63
+      Width = 31
       Height = 21
       TabOrder = 0
       OnKeyPress = edAlphaBethaKeyPress
@@ -97,7 +98,7 @@ object Form1: TForm1
     object edBeta: TEdit
       Left = 173
       Top = 13
-      Width = 57
+      Width = 31
       Height = 21
       TabOrder = 1
       OnKeyPress = edAlphaBethaKeyPress
@@ -133,6 +134,20 @@ object Form1: TForm1
       Width = 28
       Height = 21
       TabOrder = 5
+    end
+    object edAlpha2: TEdit
+      Left = 90
+      Top = 13
+      Width = 31
+      Height = 21
+      TabOrder = 6
+    end
+    object edBeta2: TEdit
+      Left = 210
+      Top = 13
+      Width = 31
+      Height = 21
+      TabOrder = 7
     end
   end
   object panelResult: TPanel
@@ -230,9 +245,9 @@ object Form1: TForm1
     OnClick = bRunClick
   end
   object Data: TStringGrid
-    Left = 69
+    Left = 56
     Top = 199
-    Width = 193
+    Width = 201
     Height = 163
     ColCount = 2
     RowCount = 2
@@ -254,5 +269,17 @@ object Form1: TForm1
     Caption = 'Clear'
     TabOrder = 6
     OnClick = bClearClick
+  end
+  object rbIntervalGroup: TRadioGroup
+    Left = 181
+    Top = 119
+    Width = 141
+    Height = 74
+    Caption = 'Interval choice:'
+    Items.Strings = (
+      'Enter number'
+      'Enter range')
+    TabOrder = 7
+    OnClick = rbIntervalGroupClick
   end
 end

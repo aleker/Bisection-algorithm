@@ -40,6 +40,9 @@ type
     bClear: TButton;
     labE: TLabel;
     edEpsilon2: TEdit;
+    rbIntervalGroup: TRadioGroup;
+    edAlpha2: TEdit;
+    edBeta2: TEdit;
 
     procedure bQuitClick(Sender: TObject);
     procedure edAlphaBethaKeyPress(Sender: TObject; var Key: Char);
@@ -48,6 +51,10 @@ type
     procedure edNKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure bClearClick(Sender: TObject);
+    procedure rbArithmeticGroupClick(Sender: TObject);
+    procedure rbIntervalGroupClick(Sender: TObject);
+    procedure bisectionClassic(Sender: TObject);
+    procedure bisectionInterval(Sender: TObject; IsInterval: Boolean);
 
   private
     { Private declarations }
@@ -72,12 +79,81 @@ type
         var it,st      : integer
       end;
 
+  vec_pointerE = ^vectorE;
+  vectorE = array of interval;
+  pointerI = ^TBisectionI;
+    TBisectionI = record
+        n              : Integer;
+        a              : vectorE;
+        var alpha,beta : interval;
+        mit            : Integer;
+        eps            : Extended;
+        var w          : interval;
+        var it,st      : integer
+    end;
+
+
 //function setValues(): vec_pointer; external 'My_DLL' index 1;
 //function setN(): Integer; external 'My_DLL' index 2;
 
 implementation
 
 {$R *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  rbArithmeticGroup.ItemIndex := 0;
+  rbIntervalGroup.ItemIndex := 0;
+  rbIntervalGroup.Enabled := False;
+  edAlpha2.Visible := False;
+  edBeta2.Visible := False;
+  Data.Cells[0,0] := 'Degree';
+  Data.Cells[1,0] := 'Coefficient';
+  Data.Cells[0,1] := '0';
+end;
+
+procedure TForm1.rbArithmeticGroupClick(Sender: TObject);
+begin
+  edAlpha2.Visible := False;
+  edBeta2.Visible := False;
+  if rbArithmeticGroup.ItemIndex = 0 then
+  begin
+    rbIntervalGroup.ItemIndex := 0;
+    rbIntervalGroup.Enabled := False;
+    Data.ColCount := 2;
+    Data.Cells[0,0] := 'Degree';
+    Data.Cells[1,0] := 'Coefficient';
+    Data.Cells[0,1] := '0';
+  end
+  else if rbArithmeticGroup.ItemIndex = 1 then
+  begin
+    rbIntervalGroup.Enabled := True;
+  end;
+end;
+
+procedure TForm1.rbIntervalGroupClick(Sender: TObject);
+begin
+  if rbIntervalGroup.ItemIndex = 0 then
+  begin
+    edAlpha2.Visible := False;
+    edBeta2.Visible := False;
+    Data.ColCount := 2;
+    Data.Cells[0,0] := 'Degree';
+    Data.Cells[1,0] := 'Coefficient';
+    Data.Cells[0,1] := '0';
+  end
+  else if rbIntervalGroup.ItemIndex = 1 then
+  begin
+    edAlpha2.Visible := True;
+    edBeta2.Visible := True;
+    Data.ColCount := 3;
+    Data.Cells[0,0] := 'Degree';
+    Data.Cells[1,0] := 'Coef. alpha';
+    Data.Cells[2,0] := 'Coef. beta';
+    Data.Cells[0,1] := '0';
+  end;
+
+end;
 
 procedure TForm1.bClearClick(Sender: TObject);
 var
@@ -90,7 +166,14 @@ begin
   edEpsilon2.Text := '';
   edN.Text := '0';
   rbArithmeticGroup.ItemIndex := 0;
+  rbIntervalGroup.ItemIndex := 0;
+  rbIntervalGroup.Enabled := False;
+  edAlpha2.Text := '';
+  edBeta2.Text := '';
+  edAlpha2.Visible := False;
+  edBeta2.Visible := False;
   // clearing Data:
+  Data.ColCount := 2;
   for i := 0 to Data.ColCount - 1 do
     Data.Cols[i].Clear;
   Data.Cells[0,0] := 'Degree';
@@ -163,13 +246,6 @@ begin
   end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  rbArithmeticGroup.ItemIndex := 0;
-  Data.Cells[0,0] := 'Degree';
-  Data.Cells[1,0] := 'Coefficient';
-  Data.Cells[0,1] := '0';
-end;
 
 function bisection (dataptr: pointer): Extended;
   var i                    : Integer;
@@ -227,12 +303,95 @@ begin
   end
 end;
 
-procedure TForm1.bRunClick(Sender: TObject);
+function bisectionI (dataptr: pointer): interval;
+  var i                    : Integer;
+      gamma,pa,pb,pg,w1,w2 : Extended;
+
+begin
+
+end;
+
+procedure TForm1.bisectionClassic(Sender: TObject);
 var
   alldata: TBisection;
   alldataptr: pointer;
   bisectionResult: Extended;
   i: Integer;
+begin
+  alldata.eps := Power(strtoint(edEpsilon.Text)* 10, strtoint(edEpsilon2.Text));
+  alldata.n := strtoint(edN.Text);      // 1-n
+  setLength(alldata.a, alldata.n + 1);  // 0-n
+  for i := 0 to alldata.n do
+  begin
+    alldata.a[i] := strtofloat(Data.Cells[1,i + 1]);
+  end;
+  alldata.alpha := strtofloat(edAlpha.Text);
+  alldata.beta := strtofloat(edBeta.Text);
+  alldata.mit := strtoint(edMaxIter.Text);
+  alldataptr := @alldata;
+  bisectionResult := bisection(alldataptr);
+  // RESULT:
+  labAlphaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.alpha);
+  labBetaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.beta);
+  labStResult.Caption := inttostr(alldata.st);
+  if (alldata.st <> 1) and (alldata.st <> 2) then
+  begin
+    labBisectionResult.Caption := formatfloat('0.00000000000000E+0000', bisectionResult);
+    labPolynResult.Caption := formatfloat('0.00000000000000E+0000', alldata.w);
+    labIterResult.Caption := inttostr(alldata.it);
+  end;
+end;
+
+
+procedure TForm1.bisectionInterval(Sender: TObject; IsInterval: Boolean);
+var
+  alldata: TBisectionI;
+  alldataptr: pointerI;
+  bisectionResult: interval;
+  i: Integer;
+begin
+  alldata.eps := Power(strtoint(edEpsilon.Text)* 10, strtoint(edEpsilon2.Text));
+  alldata.n := strtoint(edN.Text);
+  setLength(alldata.a, alldata.n + 1);
+  for i := 0 to alldata.n do
+  begin
+    alldata.a[i].a := left_read(Data.Cells[1,i + 1]);
+    if IsInterval then alldata.a[i].b := right_read(Data.Cells[2,i + 1])
+    else alldata.a[i].b := right_read(Data.Cells[1,i + 1]);
+  end;
+  alldata.alpha.a := left_read(edAlpha.Text);
+  alldata.beta.a := left_read(edBeta.Text);
+  if IsInterval then
+  begin
+    alldata.alpha.b := right_read(edAlpha2.Text);
+    alldata.beta.b := right_read(edBeta2.Text);
+  end
+  else
+  begin
+    alldata.alpha.b := right_read(edAlpha.Text);
+    alldata.beta.b := right_read(edBeta.Text);
+  end;
+  alldata.mit := strtoint(edMaxIter.Text);
+  alldataptr := @alldata;
+  // bisectionResult = bisectionI(alldataptr);
+  // RESULT:
+  labAlphaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.alpha.a)
+    + ',' + formatfloat('0.00000000000000E+0000', alldata.alpha.b);
+  labBetaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.beta.a)
+    + ',' + formatfloat('0.00000000000000E+0000', alldata.beta.b);;
+  labStResult.Caption := inttostr(alldata.st);
+  if (alldata.st <> 1) and (alldata.st <> 2) then
+  begin
+    labBisectionResult.Caption := formatfloat('0.00000000000000E+0000', bisectionResult.a)
+      + ',' + formatfloat('0.00000000000000E+0000', bisectionResult.b);
+    labPolynResult.Caption := formatfloat('0.00000000000000E+0000', alldata.w.a)
+      + ',' + formatfloat('0.00000000000000E+0000', alldata.w.b);
+    labIterResult.Caption := inttostr(alldata.it);
+    // + SZEROKOŒÆ PRZEDZIA£ÓW!!!
+  end;
+end;
+
+procedure TForm1.bRunClick(Sender: TObject);
 begin
   // clearing results:
   labAlphaResult.Caption := '';
@@ -243,30 +402,11 @@ begin
   labIterResult.Caption := '';
   //
   if rbArithmeticGroup.ItemIndex = 0 then
-  begin
-    alldata.eps := Power(strtoint(edEpsilon.Text)* 10, strtoint(edEpsilon2.Text));
-    alldata.n := strtoint(edN.Text);      // 1-n
-    setLength(alldata.a, alldata.n + 1);  // 0-n
-    for i := 0 to alldata.n do
-    begin
-      alldata.a[i] := strtofloat(Data.Cells[1,i + 1]);
-    end;
-    alldata.alpha := strtofloat(edAlpha.Text);
-    alldata.beta := strtofloat(edBeta.Text);
-    alldata.mit := strtoint(edMaxIter.Text);
-    alldataptr := @alldata;
-    bisectionResult := bisection(alldataptr);
-    // RESULT:
-    labAlphaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.alpha);
-    labBetaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.beta);
-    labStResult.Caption := inttostr(alldata.st);
-    if (alldata.st <> 1) and (alldata.st <> 2) then
-    begin
-      labBisectionResult.Caption := formatfloat('0.00000000000000E+0000', bisectionResult);
-      labPolynResult.Caption := formatfloat('0.00000000000000E+0000', alldata.w);
-      labIterResult.Caption := inttostr(alldata.it);
-    end;
-  end;
+    bisectionClassic(Sender)
+  else if ((rbArithmeticGroup.ItemIndex = 1) and (rbIntervalGroup.ItemIndex = 0)) then
+    bisectionInterval(Sender, False)
+  else if ((rbArithmeticGroup.ItemIndex = 1) and (rbIntervalGroup.ItemIndex = 1)) then
+    bisectionInterval(Sender, True);
 end;
 
 end.
