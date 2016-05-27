@@ -46,6 +46,10 @@ type
     rbIntervalGroup: TRadioGroup;
     edAlpha2: TEdit;
     edBeta2: TEdit;
+    labAlphaWidth: TLabel;
+    labBetaWidth: TLabel;
+    labBisectionWidth: TLabel;
+    labPolynWidth: TLabel;
 
     procedure bQuitClick(Sender: TObject);
     procedure edAlphaBethaKeyPress(Sender: TObject; var Key: Char);
@@ -95,10 +99,6 @@ type
         var it,st      : integer
     end;
 
-
-//function setValues(): vec_pointer; external 'My_DLL' index 1;
-//function setN(): Integer; external 'My_DLL' index 2;
-
 implementation
 
 {$R *.dfm}
@@ -114,6 +114,7 @@ begin
   Data.Cells[1,0] := 'Coefficient';
   Data.Cells[0,1] := '0';
 end;
+
 
 procedure TForm1.rbArithmeticGroupClick(Sender: TObject);
 begin
@@ -256,6 +257,18 @@ begin
     result.b := max(abs(x.a), abs(x.b));
 end;
 
+function imin ( x : interval) : extended;
+begin
+   if x.a < x.b then result := x.a
+   else result := x.b;
+end;
+
+function imax ( x : interval) : extended;
+begin
+   if x.a > x.b then result := x.a
+   else result := x.b;
+end;
+
 function bisection (dataptr: pointer): Extended;
   var i                    : Integer;
       gamma,pa,pb,pg,w1,w2 : Extended;
@@ -299,7 +312,7 @@ begin
             if pa*pg < 0 then dataptr^.beta:=gamma
             else dataptr^.alpha:=gamma;
             pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
-            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta)
+            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
           end
         end
       until (dataptr^.it=dataptr^.mit) or (dataptr^.st=0)
@@ -327,12 +340,20 @@ var
       polvalue:=p
     end {polvalue};
 begin
+  // fixing reversed intervals:
+  dataptr^.alpha := projection(dataptr^.alpha);
+  dataptr^.beta := projection(dataptr^.beta);
+  for i := 0 to dataptr^.n do
+      dataptr^.a[i] := projection(dataptr^.a[i]);
+  //
   if (dataptr^.n < 1) or (dataptr^.mit < 1) or (dataptr^.alpha.a >= dataptr^.beta.b)
     then dataptr^.st:=1
   else
   begin
     pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
+    pa := projection(pa);
     pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
+    pb := projection(pb);
     if imul(pa,pb).a >= 0 then dataptr^.st:=2
     else
     begin
@@ -343,6 +364,7 @@ begin
         help.a := 2;
         help.b := 2;
         gamma:= idiv(iadd(dataptr^.alpha,dataptr^.beta), help);
+        gamma:= projection(gamma);
         w1 := iabs(dataptr^.beta);
         w2 := iabs(dataptr^.alpha);
         if w1.b < w2.a then w1 := w2;
@@ -352,13 +374,16 @@ begin
         else
         begin
           pg:=polvalue(dataptr^.n,dataptr^.a,gamma);
+          pg := projection(pg);
           if ((pg.a = 0) and (pg.b = 0) and (int_width(pg) = 0)) then dataptr^.st:=0
           else
           begin
             if imul(pa,pg).b < 0 then dataptr^.beta:=gamma
             else dataptr^.alpha:=gamma;
             pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
-            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta)
+            pa := projection(pa);
+            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
+            pa := projection(pa)
           end
         end
       until (dataptr^.it=dataptr^.mit) or (dataptr^.st=0)
@@ -436,19 +461,21 @@ begin
   bisectionResult := bisectionI(alldataptr);
   // RESULT:
   labAlphaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.alpha.a)
-    + ',' + formatfloat('0.00000000000000E+0000', alldata.alpha.b);
+    + ' ; ' + formatfloat('0.00000000000000E+0000', alldata.alpha.b);
+  labAlphaWidth.Caption := 'Width: ' + formatfloat('0.00E+0000', int_width(alldata.alpha));
   labBetaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.beta.a)
-    + ',' + formatfloat('0.00000000000000E+0000', alldata.beta.b);;
+    + ' ; ' + formatfloat('0.00000000000000E+0000', alldata.beta.b);
+  labBetaWidth.Caption := 'Width: ' + formatfloat('0.00E+0000', int_width(alldata.beta));
   labStResult.Caption := inttostr(alldata.st);
   if (alldata.st <> 1) and (alldata.st <> 2) then
   begin
     labBisectionResult.Caption := formatfloat('0.00000000000000E+0000', bisectionResult.a)
-      + ',' + formatfloat('0.00000000000000E+0000', bisectionResult.b);
+      + ' ; ' + formatfloat('0.00000000000000E+0000', bisectionResult.b);
+    labBisectionWidth.Caption := 'Width: ' + formatfloat('0.00E+0000', int_width(bisectionResult));
     labPolynResult.Caption := formatfloat('0.00000000000000E+0000', alldata.w.a)
-      + ',' + formatfloat('0.00000000000000E+0000', alldata.w.b);
+      + ' ; ' + formatfloat('0.00000000000000E+0000', alldata.w.b);
+    labPolynWidth.Caption := 'Width: ' + formatfloat('0.00E+0000', int_width(alldata.w));
     labIterResult.Caption := inttostr(alldata.it);
-    // + SZEROKOŒÆ PRZEDZIA£ÓW!!!
-    // int_width()
   end;
 end;
 
@@ -471,46 +498,3 @@ begin
 end;
 
 end.
-
-{---------------------------------------------------------------------------}
-{                                                                           }
-{  The function bisection finds an approximate value of a root of the       }
-{  polynomial p(x)=a[n]x^n+a[n-1]x^(n-1)+...+a[1]x+a[0], lying in a given   }
-{  interval [a,b], by bisection method.                                     }
-{  Data:                                                                    }
-{    n          - the degree of polynomial,                                 }
-{    a          - an array of coefficients of the polynomial (the element   }
-{                 a[i] should contain the value of coefficient before x^i;  }
-{                 i=0,1,...,n),                                             }
-{    alpha,beta - the ends of the interval which includes the root (changed }
-{                 on exit),                                                 }
-{    mit        - maximum number of iterations,                             }
-{    eps        - relative accuracy of the solution.                        }
-{  Results:                                                                 }
-{    bisection(n,a,alpha,beta,mit,eps,w,it,st) - approximate value of the   }
-{                                                root,                      }
-{    alpha,beta                                - the ends of the last       }
-{                                                subinterval considered     }
-{                                                within the function        }
-{                                                bisection,                 }
-{    w                                         - the value of polynomial at }
-{                                                the approximate root,      }
-{    it                                        - number of iterations.      }
-{  Other parameters:                                                        }
-{    st - a variable which within the function bisection is assigned the    }
-{         value of:                                                         }
-{           1, if n<1 or mit<1 or alpha>=beta,                              }
-{           2, if p(alpha)p(beta)>=0,                                       }
-{           3, if the given accuracy eps is not achieved in mit iteration   }
-{              steps,                                                       }
-{           0, otherwise.                                                   }
-{         Note: If st=1 or st=2, then                                       }
-{               bisection(n,a,alpha,beta,mit,eps,w,it,st),                  }
-{               w and it are not calculated. If st=3, then                  }
-{               bisection(n,a,alpha,beta,mit,eps,w,it,st) yields the last   }
-{               approximation to the root.                                  }
-{  Unlocal identifier:                                                      }
-{    vector - a type identifier of extended array [q0..qn], where q0<=0 and }
-{             qn>=n.                                                        }
-{                                                                           }
-{---------------------------------------------------------------------------}

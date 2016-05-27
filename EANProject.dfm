@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'EAN'
-  ClientHeight = 564
-  ClientWidth = 460
+  ClientHeight = 557
+  ClientWidth = 533
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,7 +15,7 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object bQuit: TButton
-    Left = 324
+    Left = 367
     Top = 375
     Width = 67
     Height = 33
@@ -24,7 +24,7 @@ object Form1: TForm1
     OnClick = bQuitClick
   end
   object rbArithmeticGroup: TRadioGroup
-    Left = 96
+    Left = 115
     Top = 119
     Width = 117
     Height = 74
@@ -40,9 +40,9 @@ object Form1: TForm1
     OnClick = rbArithmeticGroupClick
   end
   object panelData: TPanel
-    Left = 96
+    Left = 69
     Top = 8
-    Width = 263
+    Width = 380
     Height = 105
     TabOrder = 2
     object labAlpha: TLabel
@@ -53,7 +53,7 @@ object Form1: TForm1
       Caption = 'Alpha:'
     end
     object labBeta: TLabel
-      Left = 141
+      Left = 245
       Top = 17
       Width = 26
       Height = 13
@@ -96,7 +96,7 @@ object Form1: TForm1
       OnKeyPress = edAlphaBethaKeyPress
     end
     object edBeta: TEdit
-      Left = 173
+      Left = 277
       Top = 13
       Width = 31
       Height = 21
@@ -106,7 +106,7 @@ object Form1: TForm1
     object edMaxIter: TEdit
       Left = 173
       Top = 36
-      Width = 57
+      Width = 44
       Height = 21
       TabOrder = 2
       OnKeyPress = edMaxIterKeyPress
@@ -143,7 +143,7 @@ object Form1: TForm1
       TabOrder = 6
     end
     object edBeta2: TEdit
-      Left = 210
+      Left = 314
       Top = 13
       Width = 31
       Height = 21
@@ -153,8 +153,8 @@ object Form1: TForm1
   object panelResult: TPanel
     Left = 16
     Top = 414
-    Width = 436
-    Height = 138
+    Width = 509
+    Height = 131
     TabOrder = 3
     object labAlphaResult: TLabel
       Left = 53
@@ -229,14 +229,38 @@ object Form1: TForm1
       Caption = 'St:'
     end
     object labStResult: TLabel
-      Left = 39
+      Left = 36
       Top = 108
+      Width = 6
+      Height = 13
+    end
+    object labAlphaWidth: TLabel
+      Left = 382
+      Top = 13
+      Width = 3
+      Height = 13
+    end
+    object labBetaWidth: TLabel
+      Left = 382
+      Top = 32
+      Width = 3
+      Height = 13
+    end
+    object labBisectionWidth: TLabel
+      Left = 382
+      Top = 51
+      Width = 3
+      Height = 13
+    end
+    object labPolynWidth: TLabel
+      Left = 382
+      Top = 70
       Width = 3
       Height = 13
     end
   end
   object bRun: TButton
-    Left = 55
+    Left = 91
     Top = 375
     Width = 69
     Height = 33
@@ -245,7 +269,7 @@ object Form1: TForm1
     OnClick = bRunClick
   end
   object Data: TStringGrid
-    Left = 124
+    Left = 166
     Top = 199
     Width = 201
     Height = 163
@@ -262,7 +286,7 @@ object Form1: TForm1
       24)
   end
   object bClear: TButton
-    Left = 188
+    Left = 228
     Top = 376
     Width = 75
     Height = 32
@@ -271,7 +295,7 @@ object Form1: TForm1
     OnClick = bClearClick
   end
   object rbIntervalGroup: TRadioGroup
-    Left = 240
+    Left = 295
     Top = 119
     Width = 119
     Height = 74
