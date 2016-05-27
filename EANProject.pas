@@ -1,7 +1,10 @@
+// TODO
+// co z przedzia³ami = 0
+// int_read dla liczby jako przedzia³
+
 unit EANProject;
 
 interface
-
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
@@ -246,10 +249,17 @@ begin
   end;
 end;
 
+function iabs ( x : interval) : interval;
+begin
+    if ((x.b*x.a < 0) or (x.a=0) or (x.b=0)) then result.a:=0
+    else result.a := min(abs(x.a), abs(x.b));
+    result.b := max(abs(x.a), abs(x.b));
+end;
 
 function bisection (dataptr: pointer): Extended;
   var i                    : Integer;
       gamma,pa,pb,pg,w1,w2 : Extended;
+  // determining polynomial value:
   function polvalue (n: Integer; a: vector; x: Extended): Extended;
     var i : Integer;
         p : Extended;
@@ -260,42 +270,41 @@ function bisection (dataptr: pointer): Extended;
       polvalue:=p
     end {polvalue};
 begin
-  if (dataptr^.n<1) or (dataptr^.mit<1) or (dataptr^.alpha>=dataptr^.beta)
+  if (dataptr^.n < 1) or (dataptr^.mit < 1) or (dataptr^.alpha >= dataptr^.beta)
     then dataptr^.st:=1
-    else begin
-           pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
-           pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
-           if pa*pb>=0
-             then dataptr^.st:=2
-             else begin
-                    dataptr^.st:=3;
-                    dataptr^.it:=0;
-                    repeat
-                      dataptr^.it:=dataptr^.it+1;
-                      gamma:=(dataptr^.alpha+dataptr^.beta)/2;
-                      w1:=abs(dataptr^.beta);
-                      w2:=abs(dataptr^.alpha);
-                      if w1<w2
-                        then w1:=w2;
-                      if w1=0
-                        then dataptr^.st:=0
-                        else if (dataptr^.beta-dataptr^.alpha)/w1<dataptr^.eps
-                               then dataptr^.st:=0
-                               else begin
-                                      pg:=polvalue(dataptr^.n,dataptr^.a,gamma);
-                                      if pg=0
-                                        then dataptr^.st:=0
-                                        else begin
-                                               if pa*pg<0
-                                                 then dataptr^.beta:=gamma
-                                                 else dataptr^.alpha:=gamma;
-                                               pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
-                                               pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta)
-                                             end
-                                    end
-                    until (dataptr^.it=dataptr^.mit) or (dataptr^.st=0)
-                  end
-         end;
+  else
+  begin
+    pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
+    pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
+    if pa*pb >= 0 then dataptr^.st:=2
+    else
+    begin
+      dataptr^.st:=3;
+      dataptr^.it:=0;
+      repeat
+        dataptr^.it:=dataptr^.it+1;
+        gamma:=(dataptr^.alpha+dataptr^.beta)/2;
+        w1:=abs(dataptr^.beta);
+        w2:=abs(dataptr^.alpha);
+        if w1<w2 then w1:=w2;
+        if w1=0 then dataptr^.st:=0
+        else if (dataptr^.beta-dataptr^.alpha)/w1 < dataptr^.eps
+          then dataptr^.st:=0
+        else
+        begin
+          pg:=polvalue(dataptr^.n,dataptr^.a,gamma);
+          if pg=0 then dataptr^.st:=0
+          else
+          begin
+            if pa*pg < 0 then dataptr^.beta:=gamma
+            else dataptr^.alpha:=gamma;
+            pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
+            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta)
+          end
+        end
+      until (dataptr^.it=dataptr^.mit) or (dataptr^.st=0)
+    end
+  end;
   if (dataptr^.st=0) or (dataptr^.st=3)then
   begin
     bisection:=gamma;
@@ -303,12 +312,63 @@ begin
   end
 end;
 
-function bisectionI (dataptr: pointer): interval;
-  var i                    : Integer;
-      gamma,pa,pb,pg,w1,w2 : Extended;
-
+function bisectionI (dataptr: pointerI): interval;
+var
+  i                         : Integer;
+  pa, pb, gamma, w1,w2, pg  : interval;
+  help                      : interval;
+  function polvalue (n: Integer; a: vectorE; x: interval): interval;
+    var i : Integer;
+        p : interval;
+    begin
+      p :=a[n];
+      for i:=n-1 downto 0 do
+        p := iadd(imul(p,x), a[i]);
+      polvalue:=p
+    end {polvalue};
 begin
-
+  if (dataptr^.n < 1) or (dataptr^.mit < 1) or (dataptr^.alpha.a >= dataptr^.beta.b)
+    then dataptr^.st:=1
+  else
+  begin
+    pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
+    pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta);
+    if imul(pa,pb).a >= 0 then dataptr^.st:=2
+    else
+    begin
+      dataptr^.st:=3;
+      dataptr^.it:=0;
+      repeat
+        dataptr^.it:=dataptr^.it+1;
+        help.a := 2;
+        help.b := 2;
+        gamma:= idiv(iadd(dataptr^.alpha,dataptr^.beta), help);
+        w1 := iabs(dataptr^.beta);
+        w2 := iabs(dataptr^.alpha);
+        if w1.b < w2.a then w1 := w2;
+        if ((w1.a = 0) and (w1.b = 0) and (int_width(w1) = 0)) then dataptr^.st:=0
+        else if idiv(isub(dataptr^.beta,dataptr^.alpha),w1).b < dataptr^.eps
+          then dataptr^.st:=0
+        else
+        begin
+          pg:=polvalue(dataptr^.n,dataptr^.a,gamma);
+          if ((pg.a = 0) and (pg.b = 0) and (int_width(pg) = 0)) then dataptr^.st:=0
+          else
+          begin
+            if imul(pa,pg).b < 0 then dataptr^.beta:=gamma
+            else dataptr^.alpha:=gamma;
+            pa:=polvalue(dataptr^.n,dataptr^.a,dataptr^.alpha);
+            pb:=polvalue(dataptr^.n,dataptr^.a,dataptr^.beta)
+          end
+        end
+      until (dataptr^.it=dataptr^.mit) or (dataptr^.st=0)
+    end
+  end;
+  if (dataptr^.st=0) or (dataptr^.st=3)then
+  begin
+    bisectionI:=gamma;
+    dataptr^.w:=pg
+  end
 end;
 
 procedure TForm1.bisectionClassic(Sender: TObject);
@@ -373,7 +433,7 @@ begin
   end;
   alldata.mit := strtoint(edMaxIter.Text);
   alldataptr := @alldata;
-  // bisectionResult = bisectionI(alldataptr);
+  bisectionResult := bisectionI(alldataptr);
   // RESULT:
   labAlphaResult.Caption := formatfloat('0.00000000000000E+0000', alldata.alpha.a)
     + ',' + formatfloat('0.00000000000000E+0000', alldata.alpha.b);
@@ -388,6 +448,7 @@ begin
       + ',' + formatfloat('0.00000000000000E+0000', alldata.w.b);
     labIterResult.Caption := inttostr(alldata.it);
     // + SZEROKOŒÆ PRZEDZIA£ÓW!!!
+    // int_width()
   end;
 end;
 

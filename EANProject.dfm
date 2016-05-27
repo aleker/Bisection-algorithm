@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'EAN'
   ClientHeight = 564
-  ClientWidth = 355
+  ClientWidth = 460
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,7 +15,7 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object bQuit: TButton
-    Left = 236
+    Left = 324
     Top = 375
     Width = 67
     Height = 33
@@ -24,9 +24,9 @@ object Form1: TForm1
     OnClick = bQuitClick
   end
   object rbArithmeticGroup: TRadioGroup
-    Left = 19
+    Left = 96
     Top = 119
-    Width = 137
+    Width = 117
     Height = 74
     Caption = 'Arithmetic:'
     DoubleBuffered = False
@@ -40,7 +40,7 @@ object Form1: TForm1
     OnClick = rbArithmeticGroupClick
   end
   object panelData: TPanel
-    Left = 40
+    Left = 96
     Top = 8
     Width = 263
     Height = 105
@@ -153,7 +153,7 @@ object Form1: TForm1
   object panelResult: TPanel
     Left = 16
     Top = 414
-    Width = 324
+    Width = 436
     Height = 138
     TabOrder = 3
     object labAlphaResult: TLabel
@@ -236,7 +236,7 @@ object Form1: TForm1
     end
   end
   object bRun: TButton
-    Left = 32
+    Left = 55
     Top = 375
     Width = 69
     Height = 33
@@ -245,7 +245,7 @@ object Form1: TForm1
     OnClick = bRunClick
   end
   object Data: TStringGrid
-    Left = 56
+    Left = 124
     Top = 199
     Width = 201
     Height = 163
@@ -262,7 +262,7 @@ object Form1: TForm1
       24)
   end
   object bClear: TButton
-    Left = 132
+    Left = 188
     Top = 376
     Width = 75
     Height = 32
@@ -271,9 +271,9 @@ object Form1: TForm1
     OnClick = bClearClick
   end
   object rbIntervalGroup: TRadioGroup
-    Left = 181
+    Left = 240
     Top = 119
-    Width = 141
+    Width = 119
     Height = 74
     Caption = 'Interval choice:'
     Items.Strings = (
