@@ -20,7 +20,7 @@ object Form1: TForm1
     Width = 67
     Height = 33
     Caption = 'Quit'
-    TabOrder = 0
+    TabOrder = 6
     OnClick = bQuitClick
   end
   object rbArithmeticGroup: TRadioGroup
@@ -44,7 +44,7 @@ object Form1: TForm1
     Top = 8
     Width = 380
     Height = 105
-    TabOrder = 2
+    TabOrder = 0
     object labAlpha: TLabel
       Left = 16
       Top = 17
@@ -100,7 +100,7 @@ object Form1: TForm1
       Top = 13
       Width = 31
       Height = 21
-      TabOrder = 1
+      TabOrder = 2
       OnKeyPress = edAlphaBethaKeyPress
     end
     object edMaxIter: TEdit
@@ -108,7 +108,7 @@ object Form1: TForm1
       Top = 36
       Width = 44
       Height = 21
-      TabOrder = 2
+      TabOrder = 4
       OnKeyPress = edMaxIterKeyPress
     end
     object edEpsilon: TEdit
@@ -116,14 +116,15 @@ object Form1: TForm1
       Top = 52
       Width = 32
       Height = 21
-      TabOrder = 3
+      TabOrder = 5
+      OnKeyPress = edAlphaBethaKeyPress
     end
     object edN: TEdit
       Left = 109
       Top = 76
       Width = 54
       Height = 21
-      TabOrder = 4
+      TabOrder = 7
       Text = '0'
       OnKeyPress = edMaxIterKeyPress
       OnKeyUp = edNKeyUp
@@ -133,29 +134,32 @@ object Form1: TForm1
       Top = 52
       Width = 28
       Height = 21
-      TabOrder = 5
+      TabOrder = 6
+      OnKeyPress = edAlphaBethaKeyPress
     end
     object edAlpha2: TEdit
       Left = 90
       Top = 13
       Width = 31
       Height = 21
-      TabOrder = 6
+      TabOrder = 1
+      OnKeyPress = edAlphaBethaKeyPress
     end
     object edBeta2: TEdit
       Left = 314
       Top = 13
       Width = 31
       Height = 21
-      TabOrder = 7
+      TabOrder = 3
+      OnKeyPress = edAlphaBethaKeyPress
     end
   end
   object panelResult: TPanel
-    Left = 16
+    Left = 8
     Top = 414
-    Width = 509
+    Width = 517
     Height = 131
-    TabOrder = 3
+    TabOrder = 7
     object labAlphaResult: TLabel
       Left = 53
       Top = 13
@@ -231,7 +235,7 @@ object Form1: TForm1
     object labStResult: TLabel
       Left = 36
       Top = 108
-      Width = 6
+      Width = 3
       Height = 13
     end
     object labAlphaWidth: TLabel
@@ -277,7 +281,8 @@ object Form1: TForm1
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
     ScrollBars = ssVertical
-    TabOrder = 5
+    TabOrder = 3
+    OnKeyPress = DataKeyPress
     ColWidths = (
       64
       64)
@@ -291,7 +296,7 @@ object Form1: TForm1
     Width = 75
     Height = 32
     Caption = 'Clear'
-    TabOrder = 6
+    TabOrder = 5
     OnClick = bClearClick
   end
   object rbIntervalGroup: TRadioGroup
@@ -303,7 +308,7 @@ object Form1: TForm1
     Items.Strings = (
       'Enter number'
       'Enter range')
-    TabOrder = 7
+    TabOrder = 2
     OnClick = rbIntervalGroupClick
   end
 end

@@ -62,6 +62,7 @@ type
     procedure rbIntervalGroupClick(Sender: TObject);
     procedure bisectionClassic(Sender: TObject);
     procedure bisectionInterval(Sender: TObject; IsInterval: Boolean);
+    procedure DataKeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -495,6 +496,28 @@ begin
     bisectionInterval(Sender, False)
   else if ((rbArithmeticGroup.ItemIndex = 1) and (rbIntervalGroup.ItemIndex = 1)) then
     bisectionInterval(Sender, True);
+end;
+
+procedure TForm1.DataKeyPress(Sender: TObject; var Key: Char);
+var DecimalSeparator : char;
+begin
+  DecimalSeparator := ',';
+  if not (Key in [#8, '0'..'9', '-',DecimalSeparator]) then
+  begin
+    //ShowMessage('Invalid key: ' + Key);
+    Key := #0;
+  end
+  else if ((Key = DecimalSeparator) or (Key = '-')) and
+    (Pos(Key, (Sender as TStringGrid).Cells[(Sender as TStringGrid).Col,(Sender as TStringGrid).Row ]) > 0) then
+  begin
+    //ShowMessage('Invalid Key: twice ' + Key);
+    Key := #0;
+  end
+  else if (Key = '-') and (((Sender as TStringGrid).Cells[(Sender as TStringGrid).Col,(Sender as TStringGrid).Row].IsEmpty) = false) then
+  begin
+    //ShowMessage('Only allowed at beginning of number: ' + Key);
+    Key := #0;
+  end;
 end;
 
 end.
