@@ -93,7 +93,7 @@ object Form1: TForm1
       Width = 31
       Height = 21
       TabOrder = 0
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = alphaBetaKeyPress
     end
     object edBeta: TEdit
       Left = 277
@@ -101,7 +101,7 @@ object Form1: TForm1
       Width = 31
       Height = 21
       TabOrder = 2
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = alphaBetaKeyPress
     end
     object edMaxIter: TEdit
       Left = 173
@@ -117,7 +117,7 @@ object Form1: TForm1
       Width = 32
       Height = 21
       TabOrder = 5
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = alphaBetaKeyPress
     end
     object edN: TEdit
       Left = 109
@@ -135,7 +135,7 @@ object Form1: TForm1
       Width = 28
       Height = 21
       TabOrder = 6
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = edEpsilon2KeyPress
     end
     object edAlpha2: TEdit
       Left = 90
@@ -143,7 +143,7 @@ object Form1: TForm1
       Width = 31
       Height = 21
       TabOrder = 1
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = alphaBetaKeyPress
     end
     object edBeta2: TEdit
       Left = 314
@@ -151,7 +151,7 @@ object Form1: TForm1
       Width = 31
       Height = 21
       TabOrder = 3
-      OnKeyPress = edAlphaBethaKeyPress
+      OnKeyPress = alphaBetaKeyPress
     end
   end
   object panelResult: TPanel

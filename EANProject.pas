@@ -52,7 +52,7 @@ type
     labPolynWidth: TLabel;
 
     procedure bQuitClick(Sender: TObject);
-    procedure edAlphaBethaKeyPress(Sender: TObject; var Key: Char);
+    procedure alphaBetaKeyPress(Sender: TObject; var Key: Char);
     procedure edMaxIterKeyPress(Sender: TObject; var Key: Char);
     procedure bRunClick(Sender: TObject);
     procedure edNKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -63,6 +63,7 @@ type
     procedure bisectionClassic(Sender: TObject);
     procedure bisectionInterval(Sender: TObject; IsInterval: Boolean);
     procedure DataKeyPress(Sender: TObject; var Key: Char);
+    procedure edEpsilon2KeyPress(Sender: TObject; var Key: Char);
 
   private
     { Private declarations }
@@ -192,6 +193,11 @@ begin
   labBisectionResult.Caption := '';
   labPolynResult.Caption := '';
   labIterResult.Caption := '';
+  // clearing width labels:
+  labAlphaWidth.Caption := '';
+  labBetaWidth.Caption := '';
+  labBisectionWidth.Caption := '';
+  labPolynWidth.Caption := '';
 end;
 
 procedure TForm1.bQuitClick(Sender: TObject);
@@ -199,7 +205,7 @@ begin
   Close;
 end;
 
-procedure TForm1.edAlphaBethaKeyPress(Sender: TObject; var Key: Char);
+procedure TForm1.alphaBetaKeyPress(Sender: TObject; var Key: Char);
 var DecimalSeparator : char;
 begin
   DecimalSeparator := ',';
@@ -219,6 +225,34 @@ begin
     //ShowMessage('Only allowed at beginning of number: ' + Key);
     Key := #0;
   end;
+end;
+
+procedure TForm1.edEpsilon2KeyPress(Sender: TObject; var Key: Char);
+var DecimalSeparator : char;
+begin
+  DecimalSeparator := ',';
+  if not (Key in [#8, '0'..'9', '-', DecimalSeparator]) then
+  begin
+    //ShowMessage('Invalid key: ' + Key);
+    Key := #0;
+  end
+  else if ((Key = DecimalSeparator) or (Key = '-')) and
+    (Pos(Key, (Sender as TEdit).Text) > 0) then
+  begin
+    //ShowMessage('Invalid Key: twice ' + Key);
+    Key := #0;
+  end
+  else if (Key = '-') and ((Sender as TEdit).SelStart <> 0) then
+  begin
+    //ShowMessage('Only allowed at beginning of number: ' + Key);
+    Key := #0;
+  end
+  else if ((Key in ['0'..'9']) and ((Sender as TEdit).GetTextLen = 0)) then
+  begin
+    // this has to be negative value
+    Key := #0;
+  end;
+
 end;
 
 procedure TForm1.edMaxIterKeyPress(Sender: TObject; var Key: Char);
@@ -369,14 +403,14 @@ begin
         w1 := iabs(dataptr^.beta);
         w2 := iabs(dataptr^.alpha);
         if w1.b < w2.a then w1 := w2;
-        if ((w1.a = 0) and (w1.b = 0) and (int_width(w1) = 0)) then dataptr^.st:=0
+        if ((w1.a <= 0) and (w1.b >= 0)) then dataptr^.st:=0
         else if idiv(isub(dataptr^.beta,dataptr^.alpha),w1).b < dataptr^.eps
           then dataptr^.st:=0
         else
         begin
           pg:=polvalue(dataptr^.n,dataptr^.a,gamma);
           pg := projection(pg);
-          if ((pg.a = 0) and (pg.b = 0) and (int_width(pg) = 0)) then dataptr^.st:=0
+          if ((pg.a <= 0) and (pg.b >= 0)) then dataptr^.st:=0
           else
           begin
             if imul(pa,pg).b < 0 then dataptr^.beta:=gamma
